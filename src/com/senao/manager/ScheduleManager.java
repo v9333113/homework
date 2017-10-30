@@ -1,44 +1,46 @@
 package com.senao.manager;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.type.TypeFactory;
 
 import com.senao.vo.Schedule;
 
-public class ScheduleManager {
+/**
+ * 
+ * @author T00058
+ *
+ */
+public class ScheduleManager extends JsonManager{
 	
-	private List<Schedule> schedules;
+	private List<Schedule> schedules = new ArrayList<>();
+	private String path = "src/com/senao/json/schedule.json";
 	
+	/**
+	 * List<Object>轉換成成List<vo>
+	 */
 	@SuppressWarnings("unchecked")
-	public void processConfigs() {
+	public void processJsonConfig() {
 		ObjectMapper mapper = new ObjectMapper();
+		List<Object> objects = (List<Object>)this.getConfigObjet(path);
 		try {
-			schedules = (List<Schedule>) mapper.readValue(new File("src/com/senao/json/schedule.json"),
-					TypeFactory.defaultInstance().constructCollectionType(List.class,  
-							Schedule.class));
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+			for(Object obj:objects){
+				Schedule schedule = mapper.convertValue(obj, Schedule.class);
+				schedules.add(schedule);
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	//計算
 	public Integer count(){
 		return schedules.size();
 	}
-
+	
+	//取得物件
 	public List<Schedule> getSchedules() {
 		return schedules;
 	}
-	
-	
 }	

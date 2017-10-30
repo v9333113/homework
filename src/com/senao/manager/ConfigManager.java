@@ -1,40 +1,45 @@
 package com.senao.manager;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.type.TypeFactory;
 
 import com.senao.vo.Config;
 
-public class ConfigManager {
+/**
+ * 
+ * @author T00058
+ *
+ */
+public class ConfigManager extends JsonManager{
 	
-	private List<Config> configs;
+	private List<Config> configs = new ArrayList<>();
+	private String path = "src/com/senao/json/config.json";
 	
+	/**
+	 * List<Object>轉換成成List<vo>
+	 */
 	@SuppressWarnings("unchecked")
-	public void processConfigs() {
+	public void processJsonConfig() {
 		ObjectMapper mapper = new ObjectMapper();
+		List<Object> objects = (List<Object>)this.getConfigObjet(path);
 		try {
-			configs = (List<Config>) mapper.readValue(new File("src/com/senao/json/config.json"),
-					TypeFactory.defaultInstance().constructCollectionType(List.class,  
-							Config.class));
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+			for(Object obj:objects){
+				Config config = mapper.convertValue(obj, Config.class);
+				configs.add(config);
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	//計算
 	public Integer count(){
 		return configs.size();
 	}
-
+	
+	//取得物件
 	public List<Config> getConfigs() {
 		return configs;
 	}
